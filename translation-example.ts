@@ -32,6 +32,7 @@ const translations = {
 type TranslationType = typeof translations;
 
 type Language = keyof TranslationType;
+// type Language = "swedish" | "english"
 
 type ConcatNestedKeys<T> = T extends object
   ? {
@@ -41,16 +42,19 @@ type ConcatNestedKeys<T> = T extends object
   : '';
 
 type TranslationParams = ConcatNestedKeys<TranslationType[Language]>;
+// type TranslationParams = "vehicle.brand" | "vehicle.color" | "furniture.chair" | "furniture.table" | "furniture.type.plastic" | "furniture.type.steel"
 
 type FlattenObjectValues<T> = T extends object
   ? { [K in keyof T]: FlattenObjectValues<T[K]> }[keyof T]
   : T;
 
 type AllTranslatedStrings = FlattenObjectValues<TranslationType>;
+// type AllTranslatedStrings = "märke" | "färg" | "stol" | "bord" | "plast" | "stål" | "brand" | "color" | "chair" | "table" | "plastic" | "steel"
 
 type NestedKeys<T> = T extends object ? { [K in keyof T]: K | NestedKeys<T[K]> }[keyof T] : never;
 
 type AllKeys = NestedKeys<TranslationType[Language]>;
+// type AllKeys = "brand" | "color" | "chair" | "table" | "plastic" | "steel" | "vehicle" | "furniture" | "type"
 
 type ObjectOrSubPaths<T> = {
   [K in keyof T]: T[K] extends object ? ObjectOrSubPaths<T[K]> : T[K];
@@ -60,7 +64,7 @@ type TranslationsAllSubPaths = ObjectOrSubPaths<TranslationType>;
 
 // translate function
 
-function translate<K extends keyof TranslationType>(
+function translate(
   language: Language,
   keys: TranslationParams
 ): AllTranslatedStrings | typeof keys {
@@ -86,16 +90,14 @@ function translate<K extends keyof TranslationType>(
 }
 
 const validTranslation = translate('swedish', 'vehicle.brand');
-
-console.log('### validTranslation:', validTranslation);
-
-const invalidTranslation = translate('swedish', 'vehicle');
-const invalidTranslation2 = translate('swedish', 'vehicle.color.nonexistent');
-
 const validTranslation2 = translate('swedish', 'furniture.type.plastic');
 
+console.log('### validTranslation:', validTranslation);
 console.log('### validTranslation2:', validTranslation2);
 
+// TS ERROR
+const invalidTranslation = translate('swedish', 'vehicle');
+const invalidTranslation2 = translate('swedish', 'vehicle.color.nonexistent');
 const invalidTranslation3 = translate('swedish', 'furniture.type');
 
 console.log('### invalidTranslation3:', invalidTranslation3);

@@ -15,7 +15,7 @@ let variableName2: number = 2;
 const constantName: number = 3;
 
 let variableName3 = 4;
-variableName3 = "hej";
+variableName3 = 'hej';
 
 let items = [1, 2, 3, null];
 
@@ -80,10 +80,6 @@ interface Point {
   z?: number;
 }
 
-function multiply(x: number, y: number): number {
-  return x * y;
-}
-
 function calc(p: Point) {
   const { x, y, z } = p;
   Math.floor(x * y * z);
@@ -107,6 +103,7 @@ interface BusinessPartner {
 interface Contact {
   email: string;
   phone: string;
+  name: number;
 }
 
 type Customer = BusinessPartner & Contact;
@@ -130,13 +127,18 @@ console.log(parsedData.name); // "John"
 console.log(parsedData.age); // "25"
 console.log(parsedData.city); // error
 
+const parsedData2 = <MyData>JSON.parse(jsonString);
+
+console.log(parsedData2.name); // "John"
+console.log(parsedData2.age); // "25"
+console.log(parsedData2.city); // error
 
 ////////////////////////////////////////////////////////////////
 
 // unknown type
 
 function processInput(input: unknown): string {
-
+  input.join(', ');
   if (typeof input === 'string') {
     return input.toUpperCase();
   } else if (Array.isArray(input)) {
@@ -146,19 +148,18 @@ function processInput(input: unknown): string {
   }
 }
 
-const result1 = processInput('Hello'); 
-const result2 = processInput([1, 2, 3]); 
+const result1 = processInput('Hello');
+const result2 = processInput([1, 2, 3]);
 const result3 = processInput({ key: 'value' });
 
 ///////////////////////////////////////////////////////////////
 //// type guard
 
-
-function isPerson(obj: any): obj is { name: string, age: number } {
-  return typeof obj === 'object' && 'name' in obj && 'age' in obj;
+function isPerson(obj: any): obj is { name: string; age: number } {
+  return (typeof obj === 'object' && 'name' in obj && 'age' in obj) || false;
 }
 
-function printPersonInfo(person: { name: string, age: number } | string): string {
+function printPersonInfo(person: { name: string; age: number } | string): string {
   if (isPerson(person)) {
     return `Name: ${person.name}, Age: ${person.age}`;
   } else {
@@ -168,7 +169,6 @@ function printPersonInfo(person: { name: string, age: number } | string): string
 }
 
 const validPerson = { name: 'John', age: 25 };
-const invalidPerson = 'Invalid Data';
 
 // generics
 function getRandomStringElement(items: string[]): string {
@@ -214,7 +214,6 @@ function prop<T, K>(obj: T, key: K) {
 function prop2<T, K extends keyof T>(obj: T, key: K) {
   return obj[key];
 }
-
 
 ////////////////////////////////////////////////////////////////
 
@@ -271,14 +270,14 @@ type MyObjectValues2 = ObjectValues<typeof myObject>;
 const exampleKey2: MyObjectKeys = 'key2';
 const exampleValue2: MyObjectValues = 'value2';
 
-// let john = {
-//   firstName: 'John',
-//   lastName: 'Doe'
-// };
+let johnny = {
+  firstName: 'John',
+  lastName: 'Doe'
+};
 
-const firstNameKeyOfJohn: ObjectKeys<typeof john> = 'firstName';
+const firstNameKeyOfJohn: ObjectKeys<typeof johnny> = 'firstName';
 // error
-const firstNameOfJohn: ObjectValues<typeof john> = 'noError';
+const firstNameOfJohn: ObjectValues<typeof johnny> = 'noError';
 
 // as const
 let robert = {
@@ -293,7 +292,7 @@ const firstNameOfRobert: ObjectValues<typeof robert> = 'Error';
 
 // string checking templates
 
-type EmailTemplate = `${string}@${string}.${'com' | 'org' | 'net' | 'edu' | 'gov'}`;
+type EmailTemplate = `${string}@${string}.${'com' | 'org' | 'net' | 'edu' | 'gov' | 'name'}`;
 
 const validEmail: EmailTemplate = 'john.doe@example.com';
 const invalidEmail: EmailTemplate = 'invalid-email';
